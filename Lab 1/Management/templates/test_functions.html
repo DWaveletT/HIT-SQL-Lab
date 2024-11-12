@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能测试页面</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container mt-4">
+        <h2>功能测试</h2>
+
+        <!-- 功能1: 查询学生需要用到的所有教材 -->
+        <h3>查询教材</h3>
+        <form id="find-books-form">
+            <div class="form-group">
+                <label for="studentID">学生ID:</label>
+                <input type="number" class="form-control" id="studentID" name="studentID" required>
+            </div>
+            <div class="form-group">
+                <label for="DID">学期ID:</label>
+                <input type="number" class="form-control" id="DID" name="DID" required>
+            </div>
+            <button type="submit" class="btn btn-primary">查询</button>
+        </form>
+        <div id="books-result" class="mt-4"></div>
+
+        <hr>
+
+        <!-- 功能2: 查询学生成绩平均值 -->
+        <h3>查询学生成绩平均值</h3>
+        <form id="find-avg-grade-form">
+            <button type="submit" class="btn btn-primary">查询</button>
+        </form>
+        
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>学号</th>
+                    <th>姓名</th>
+                    <th>平均成绩</th>
+                </tr>
+            </thead>
+            
+            <tbody id="avg-grade-result"></tbody>
+        </table>
+
+        <!-- 功能3: 尝试选课 -->
+        <h3>学生选课</h3>
+        <form id="enroll-course-form">
+            <div class="form-group">
+                <label for="studentIDEnroll">学生ID:</label>
+                <input type="number" class="form-control" id="studentIDEnroll" name="studentIDEnroll" required>
+            </div>
+            <div class="form-group">
+                <label for="courseIDEnroll">课程ID:</label>
+                <input type="number" class="form-control" id="courseIDEnroll" name="courseIDEnroll" required>
+            </div>
+            <button type="submit" class="btn btn-primary">选课</button>
+        </form>
+        <div id="enroll-result" class="mt-4"></div>
+
+    </div>
+
+    <script>
+        // 查询学生需要的教材
+        $('#find-books-form').on('submit', function(event) {
+            event.preventDefault();
+            $.ajax({
+                url: '/test-funcs/find-books',
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    console.log(response)
+                    let booksHTML = '<ul>';
+                    response.books.forEach(function(book) {
+                        booksHTML += `<li>${book}</li>`;
+                    });
+                    booksHTML += '</ul>';
+                    $('#books-result').html('<h5>需要的教材:</h5>' + booksHTML);
+                },
+                error: function() {
+                    $('#books-result').html('<div class="alert alert-danger">查询失败。</div>');
+                }
+            });
+        });
+
+    // 查询学生平均成绩
+    $('#find-avg-grade-form').on('submit', function(event) {
+        event.preventDefault();
+        $.ajax({
+            url: '/test-funcs/find-avg-grade',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                $('#avg-grade-result').children().remove()
+                response.students.forEach(function(student) {
+                    $('#avg-grade-result').append(`<tr>
+                        <td>${student.SID}</td>
+                        <td>${student.SName}</td>
+                        <td>${student.avg_grade}</td>
+                    </tr>`)
+                });
+            },
+            error: function() {
+                $('#avg-grade-result').html('<div class="alert alert-danger">查询失败。</div>');
+            }
+        });
+    });
+
+        // 学生选课
+        $('#enroll-course-form').on('submit', function(event) {
+            event.preventDefault();
+            $.ajax({
+                url: '/test-funcs/enroll-course',
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        $('#enroll-result').html('<div class="alert alert-success">选课成功！</div>');
+                    } else {
+                        $('#enroll-result').html(`<div class="alert alert-danger">${response.message}</div>`);
+                    }
+                },
+                error: function() {
+                    $('#enroll-result').html('<div class="alert alert-danger">选课失败。</div>');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

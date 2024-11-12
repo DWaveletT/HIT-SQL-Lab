@@ -1,0 +1,137 @@
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage{tikz, ctex}
+\usetikzlibrary{positioning, shapes.geometric, shapes.multipart, arrows.meta}
+
+\begin{document}
+
+\begin{tikzpicture}[
+    >=Stealth,
+    entity/.style={
+        draw, rectangle split, rectangle split parts=2,
+        rounded corners,
+        minimum width=2cm, minimum height=1cm,
+        align = center,
+        fill=blue!20
+    },
+    relationship/.style={
+        draw, diamond, aspect=2,
+        minimum width=2cm, minimum height=1cm,
+        fill=orange!20
+    },
+    attribute/.style={
+        draw, ellipse,
+        minimum width=2.5cm, minimum height=1cm,
+        fill=green!20
+    },
+    line/.style={thick}
+]
+
+% Entities
+\node[entity] at(0, 4)   (student)  {
+    \nodepart{one}
+    \textbf{学生}
+    \nodepart{two}
+    \underline{\tt SID} \\
+    {\tt SName} \\
+    {\tt SGender}
+};
+\node[entity] at(6, 4)   (class)  {
+    \nodepart{one}
+    \textbf{班级}
+    \nodepart{two}
+    \underline{\tt GID} \\
+    {\tt GName}
+};
+\node[entity] at(12, 2)  (major)  {
+    \nodepart{one}
+    \textbf{专业}
+    \nodepart{two}
+    \underline{\tt MID} \\
+    {\tt MName}
+};
+\node[entity] at(0, 0)   (course) {
+    \nodepart{one}
+    \textbf{课程}
+    \nodepart{two}
+    \underline{\tt CID} \\
+    {\tt CName} \\
+    {\tt Ccredit}
+};
+\node[entity] at(6, 0)   (teacher) {
+    \nodepart{one}
+    \textbf{教师}
+    \nodepart{two}
+    \underline{\tt TID} \\
+    {\tt TName}
+};
+\node[entity] at(0, -4)  (book)    {
+    \nodepart{one}
+    \textbf{教材}
+    \nodepart{two}
+    \underline{\tt BID} \\
+    {\tt BName}
+};
+\node[entity] at(4, -4)  (room)    {
+    \nodepart{one}
+    \textbf{教室}
+    \nodepart{two}
+    \underline{\tt RID} \\
+    {\tt RName}
+};
+\node[entity] at(-4, -4.5) (semester){
+    \nodepart{one}
+    \textbf{学期}
+    \nodepart{two}
+    \underline{\tt DID} \\
+    {\tt DName} \\
+    {\tt STime} \\
+    {\tt ETame}
+};
+
+% Relationships
+\node[relationship] (r1) at (0, 2) {选修};
+\node[relationship] (r2) at (3, 4) {所属};
+\node[relationship] (r3) at (9, 4) {归属};
+\node[relationship] (r4) at (3, 0) {教授};
+\node[relationship] (r5) at (0, -2) {使用};
+\node[relationship] (r6) at (4, -2) {上课};
+\node[relationship] (r7) at (-4, -2) {开设};
+\node[relationship] (r8) at (6, 2) {管理};
+\node[relationship] (r9) at (9, 0) {归属};
+
+\node[attribute] (grade) [left = of r1] {成绩};
+\node[attribute] (time) [right = of r6] {时间};
+
+% Connect entities to relationships
+\draw[line, <-] (student) -- (r1);
+\draw[line, ->] (r1) -- (course);
+\draw[line, dashed] (r1) -- (grade);
+
+\draw[line, <-] (student) -- (r2);
+\draw[line] (r2) -- (class);
+
+\draw[line, <-] (class) -- (r3);
+\draw[line] (r3) -- (major);
+
+\draw[line] (course) -- (r4);
+\draw[line] (r4) -- (teacher);
+
+\draw[line] (course) -- (r5);
+\draw[line, ->] (r5) -- (book);
+
+\draw[line, <-] (course) -- (r6);
+\draw[line, ->] (r6) -- (room);
+\draw[line, dashed] (r6) -- (time);
+
+\draw[line, <-] (course) -- (r7);
+\draw[line] (r7) -- (semester);
+
+\draw[line] (teacher) -- (r8);
+\draw[line, ->] (r8) -- (class);
+
+\draw[line] (major) -- (r9);
+\draw[line, ->] (r9) -- (teacher);
+
+\end{tikzpicture}
+
+\end{document}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程表</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container mt-4">
+        <h2>课程表</h2>
+
+        <!-- 课程表展示 -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>课程 ID</th>
+                    <th>课程名称</th>
+                    <th>学分</th>
+                    <th>开课学期 ID</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="course-table-body">
+                {% for course in courses %}
+                <tr id="course-{{ course.CID }}">
+                    <td>{{ course.CID }}</td>
+                    <td>{{ course.CName }}</td>
+                    <td>{{ course.Credits }}</td>
+                    <td>{{ course.DID }}</td>
+                    <td>
+                        <a href="javascript:void(0);" onclick="deleteCourse({{ course.CID }})" class="btn btn-danger btn-sm">删除</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- 添加新课程 -->
+        <h3>添加新课程</h3>
+        <form id="add-course-form">
+            <div class="form-group">
+                <label for="CName">课程名称:</label>
+                <input type="text" class="form-control" id="CName" name="CName" required>
+            </div>
+            <div class="form-group">
+                <label for="Credits">学分:</label>
+                <input type="number" class="form-control" id="Credits" name="Credits" required>
+            </div>
+            <div class="form-group">
+                <label for="DID">开课学期ID:</label>
+                <input type="number" class="form-control" id="DID" name="DID" required>
+            </div>
+            <button type="submit" class="btn btn-primary">提交</button>
+        </form>
+
+        <!-- 提示信息 -->
+        <div id="message" class="mt-4"></div>
+    </div>
+
+    <script>
+        // 添加课程表单提交
+        $('#add-course-form').on('submit', function(event) {
+            event.preventDefault(); // 阻止表单默认提交行为
+            $.ajax({
+                url: '/courses/insert',
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    // 在页面中添加新课程
+                    $('#course-table-body').append(`
+                        <tr id="course-${response.CID}">
+                            <td>${response.CID}</td>
+                            <td>${response.CName}</td>
+                            <td>${response.Credits}</td>
+                            <td>${response.DID}</td>
+                            <td>
+                                <a href="javascript:void(0);" onclick="deleteCourse(${response.CID})" class="btn btn-danger btn-sm">删除</a>
+                            </td>
+                        </tr>
+                    `);
+                    $('#message').html('<div class="alert alert-success">课程添加成功！</div>');
+                },
+                error: function() {
+                    $('#message').html('<div class="alert alert-danger">添加课程失败。</div>');
+                }
+            });
+        });
+
+        // 删除课程
+        function deleteCourse(CID) {
+            $.ajax({
+                url: `/courses/delete/${CID}`,
+                method: 'POST',
+                success: function(response) {
+                    if (response.success) {
+                        $(`#course-${CID}`).remove();
+                        $('#message').html('<div class="alert alert-success">课程删除成功！</div>');
+                    } else {
+                        $('#message').html('<div class="alert alert-danger">删除课程失败。</div>');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

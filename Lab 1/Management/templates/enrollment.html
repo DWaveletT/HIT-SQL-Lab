@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>选课表</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container mt-4">
+        <h2>选课表</h2>
+
+        <!-- 选课表展示 -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>学生 ID</th>
+                    <th>课程 ID</th>
+                    <th>成绩</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="enrollment-table-body">
+                {% for enrollment in enrollments %}
+                <tr id="enrollment-{{ enrollment.SID }}-{{ enrollment.CID }}">
+                    <td>{{ enrollment.SID }}</td>
+                    <td>{{ enrollment.CID }}</td>
+                    <td>{{ enrollment.Score }}</td>
+                    <td>
+                        <a href="javascript:void(0);" onclick="deleteEnrollment({{ enrollment.SID }}, {{ enrollment.CID }})" class="btn btn-danger btn-sm">删除</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- 添加选课 -->
+        <h3>添加选课</h3>
+        <form id="add-enrollment-form">
+            <div class="form-group">
+                <label for="SID">学生ID:</label>
+                <input type="number" class="form-control" id="SID" name="SID" required>
+            </div>
+            <div class="form-group">
+                <label for="CID">课程ID:</label>
+                <input type="number" class="form-control" id="CID" name="CID" required>
+            </div>
+            <div class="form-group">
+                <label for="Score">成绩:</label>
+                <input type="number" class="form-control" id="Score" name="Score">
+            </div>
+            <button type="submit" class="btn btn-primary">提交</button>
+        </form>
+
+        <!-- 提示信息 -->
+        <div id="message" class="mt-4"></div>
+    </div>
+
+    <script>
+        // 添加选课表单提交
+        $('#add-enrollment-form').on('submit', function(event) {
+            event.preventDefault(); // 阻止表单默认提交行为
+            $.ajax({
+                url: '/enrollments/insert',
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    console.log(response.success);
+                    if (response.success) {
+                        if($(`#enrollment-${response.SID}-${response.CID}`).length > 0){
+                            $(`#enrollment-${response.SID}-${response.CID}`).remove();
+                            $('#message').html('<div class="alert alert-success">成绩更新成功！</div>');
+                        } else {
+                            $('#message').html('<div class="alert alert-success">选课添加成功！</div>');
+                        }
+
+                        // 在页面中添加新选课
+                        $('#enrollment-table-body').append(`
+                            <tr id="enrollment-${response.SID}-${response.CID}">
+                                <td>${response.SID}</td>
+                                <td>${response.CID}</td>
+                                <td>${response.Score}</td>
+                                <td>
+                                    <a href="javascript:void(0);" onclick="deleteEnrollment(${response.SID}, ${response.CID})" class="btn btn-danger btn-sm">删除</a>
+                                </td>
+                            </tr>
+                        `);
+                    } else {
+                        $('#message').html(`<div class="alert alert-danger">${response.message}</div>`);
+                    }
+                },
+                error: function() {
+                    $('#message').html('<div class="alert alert-danger">添加选课失败。</div>');
+                }
+            });
+        });
+
+        // 删除选课
+        function deleteEnrollment(SID, CID) {
+            $.ajax({
+                url: `/enrollments/delete/${SID}/${CID}`,
+                method: 'POST',
+                success: function(response) {
+                    if (response.success) {
+                        $(`#enrollment-${SID}-${CID}`).remove();
+                        $('#message').html('<div class="alert alert-success">选课删除成功！</div>');
+                    } else {
+                        $('#message').html('<div class="alert alert-danger">删除选课失败。</div>');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

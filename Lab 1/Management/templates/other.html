@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生表</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container mt-4">
+        <h2>教材表</h2>
+
+        <!-- 教材表展示 -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>教材 ID</th>
+                    <th>教材名称</th>
+                </tr>
+            </thead>
+            <tbody id="book-table-body">
+                {% for book in books %}
+                <tr id="book-{{ book.BID }}">
+                    <td>{{ book.BID }}</td>
+                    <td>{{ book.BName }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>学期表</h2>
+
+        <!-- 学期表展示 -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>学期 ID</th>
+                    <th>学期名称</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                </tr>
+            </thead>
+            <tbody id="term-table-body">
+                {% for term in terms %}
+                <tr id="term-{{ term.DID }}">
+                    <td>{{ term.DID }}</td>
+                    <td>{{ term.DName }}</td>
+                    <td>{{ term.STime }}</td>
+                    <td>{{ term.ETime }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <h2>教室表</h2>
+
+        <!-- 教室表展示 -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>教室 ID</th>
+                    <th>教室名称</th>
+                </tr>
+            </thead>
+            <tbody id="room-table-body">
+                {% for room in books %}
+                <tr id="room-{{ room.BID }}">
+                    <td>{{ room.BID }}</td>
+                    <td>{{ room.BName }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <h2>班级表</h2>
+
+        <!-- 班级表展示 -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>班级 ID</th>
+                    <th>班级名称</th>
+                </tr>
+            </thead>
+            <tbody id="grade-table-body">
+                {% for grade in grades %}
+                <tr id="grade-{{ grade.GID }}">
+                    <td>{{ grade.GID }}</td>
+                    <td>{{ grade.GName }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>教师表</h2>
+
+        <!-- 教师表展示 -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>教师 ID</th>
+                    <th>教师名称</th>
+                </tr>
+            </thead>
+            <tbody id="teacher-table-body">
+                {% for teacher in teachers %}
+                <tr id="grade-{{ teacher.TID }}">
+                    <td>{{ teacher.TID }}</td>
+                    <td>{{ teacher.TName }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <h2>课程教材表</h2>
+
+        <!-- 课程教材展示 -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>课程 ID</th>
+                    <th>教材 ID</th>
+                </tr>
+            </thead>
+            <tbody id="usebook-table-body">
+                {% for usebook in usebooks %}
+                <tr id="usebook-{{ usebook.CID }}-{{ usebook.BID }}">
+                    <td>{{ usebook.CID }}</td>
+                    <td>{{ usebook.BID }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>课程教室表</h2>
+
+        <!-- 课程教室表展示 -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>教材 ID</th>
+                    <th>教室 ID</th>
+                </tr>
+            </thead>
+            <tbody id="time-table-body">
+                {% for time in times %}
+                <tr id="time-{{ time.BID }}">
+                    <td>{{ time.CID }}</td>
+                    <td>{{ time.RID }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
